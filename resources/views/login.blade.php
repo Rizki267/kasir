@@ -25,15 +25,16 @@
   </style>
 </head>
 <body>
-  <form class="login-form">
+  <form method="POST" action="/login" class="login-form">
+    @csrf
     <h2 class="mb-4 text-center">Login</h2>
     <div class="mb-3">
-      <label for="username" class="form-label">Username</label>
-      <input type="text" class="form-control" id="username" placeholder="Enter your username" >
+      <label for="email" class="form-label">Email</label>
+      <input type="text" class="form-control" id="email" name="email" placeholder="Enter your Email" >
     </div>
     <div class="mb-4">
       <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password" placeholder="Enter your password" >
+      <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" >
     </div>
     <button type="submit" class="btn btn-primary w-100">Login</button>
   </form>
