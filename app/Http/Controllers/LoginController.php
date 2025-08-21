@@ -32,7 +32,8 @@ class LoginController extends Controller
             // dd($hak_akses);
             // die;
         }if ($hak_akses == 'admin') {
-            echo "<h1>Selamat Datang Admin </h1>";
+            //menampilkan halaman admin/home
+            return redirect()->intended('/admin/home');
         }elseif ($hak_akses == 'kasir') {
             echo "<H1>Selamat Datang Kasir</H1>";
         }else {

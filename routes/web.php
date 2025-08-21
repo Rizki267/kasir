@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
 
 
@@ -40,4 +41,7 @@ Route::get('/penjumlahan', function () {
 Route::get('/login', [LoginController::class, 'index']);
 // cek login
 Route::post('/login', [LoginController::class, 'cek_login']);
+
+// memanggil halaman admin - home
+Route::get('/admin/home', [AdminController::class, 'index']);
 
