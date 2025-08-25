@@ -42,6 +42,9 @@ Route::get('/login', [LoginController::class, 'index']);
 // cek login
 Route::post('/login', [LoginController::class, 'cek_login']);
 
+//untuk logout
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
 // memanggil halaman admin - home
 Route::get('/admin/home', [AdminController::class, 'index']);
 

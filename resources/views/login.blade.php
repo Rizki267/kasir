@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="{{asset('assets/css/bootstrap.min.css') }}">
    <style>
     body {
-      background: #00189e;
+      background: #000000;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .login-form {
-      background: #00aeff;
+      background: #615151;
       padding: 2rem 2.5rem;
       border-radius: 8px;
       box-shadow: 0 6px 24px rgba(25, 125, 255, 0.12);
