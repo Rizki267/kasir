@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\KategoriController;
 
 
 /*
@@ -47,4 +48,7 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // memanggil halaman admin - home
 Route::get('/admin/home', [AdminController::class, 'index']);
+
+// memanggil halaman admin - kategori
+Route::get('/admin/kategori', [KategoriController::class, 'index']);
 
