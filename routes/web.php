@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\KategoriController;
 
 
@@ -51,4 +52,11 @@ Route::get('/admin/home', [AdminController::class, 'index']);
 
 // memanggil halaman admin - kategori
 Route::get('/admin/kategori', [KategoriController::class, 'index']);
+//menyimpan data kategori
+Route::post('/tambah_kategori', [KategoriController::class, 'store']);
+//mengubah data kategori
+Route::put('/ubah_kategori/{id}', [KategoriController::class, 'update']);
+
+//memanggil halaman admin - produk
+Route::get('/admin/produk', [ProdukController::class, 'index']);
 
