@@ -55,8 +55,15 @@ Route::get('/admin/kategori', [KategoriController::class, 'index']);
 //menyimpan data kategori
 Route::post('/tambah_kategori', [KategoriController::class, 'store']);
 //mengubah data kategori
-Route::put('/ubah_kategori/{id}', [KategoriController::class, 'update']);
+Route::put('/ubah_kategori/{id}', [KategoriController::class, 'update'])->name('ubah_kategori');
+//menghapus data kategori
+Route::delete('/hapus_kategori/{id}', [KategoriController::class, 'destroy'])->name('hapus_kategori');
 
 //memanggil halaman admin - produk
 Route::get('/admin/produk', [ProdukController::class, 'index']);
-
+//menyimpan data produk
+Route::post('/tambah_produk', [ProdukController::class, 'store']);
+//mengubah data produk
+Route::put('/ubah_produk/{id}', [ProdukController::class, 'update'])->name('ubah_produk');
+//menghapus data kategori
+Route::delete('/hapus_produk/{id}', [ProdukController::class, 'destroy'])->name('hapus_produk');
