@@ -75,3 +75,9 @@ Route::get('/admin/transaksi', [TransaksiController::class, 'index']);
 Route::post('/add_to_cart/{id}', [TransaksiController::class, 'add_cart'])->name('add_cart');
 //Hapus salah satu item di keranjang
 Route::delete('/keranjang/{id}', [TransaksiController::class, 'destroy'])->name('keranjang.destroy');
+
+Route::post('/keranjang/update/{id}', [TransaksiController::class, 'updateQty'])->name('keranjang.update');
+
+Route::post('/transaksi/simpan', [TransaksiController::class, 'simpanTransaksi'])->name('simpan_transaksi');
+
+Route::get('/transaksi/cetak/{kode}', [TransaksiController::class, 'cetak'])->name('transaksi.cetak');

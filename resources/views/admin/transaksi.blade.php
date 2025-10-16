@@ -11,9 +11,9 @@
     @include('admin.modal.add_cart')
     <div class="row mb-3">
         <div class="col-md-2">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCart">
-        Pilih Produk
-    </button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCart">
+                Pilih Produk
+            </button>
         </div>
     </div>
     <div class="row mb-3">
@@ -21,7 +21,7 @@
             <h4 class="mb-0">Kode Transaksi </h4>
         </div>
         <div class="col-md-10">
-            <h4 class="mb-0">{{$kodeTransaksi}} </h4>
+            <h4 class="mb-0">{{ $kodeTransaksi }} </h4>
         </div>
     </div>
     <div class="row mb-3">
@@ -49,21 +49,241 @@
             @foreach ($keranjang as $data)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $data->produk_id }}</td>
+                    <td><span class="badge bg-success">{{ $data->produk_id }}</span></td>
                     <td>{{ $data->nama_produk }}</td>
                     <td>{{ $data->harga }}</td>
-                    <td>{{ $data->qty }}</td>
+                    <td>
+                        <form action="/keranjang/update/{{ $data->id }}" method="POST">
+                            @csrf
+                            <input type="number" name="qty" value="{{ $data->qty }}" class="form-control"
+                                min="1" onchange="this.form.submit()">
+                        </form>
+                    </td>
                     <td>{{ $data->subtotal }}</td>
                     <td>
-                        <form action="{{route('keranjang.destroy',$data->id)}}" method="POST" onsubmit="return confirm('Apakah yakin ingin menghapus barang ini dari keranjang?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-sm btn-danger">Hapus</button>
+                        <form action="{{ route('keranjang.destroy', $data->id) }}" method="POST"
+                            onsubmit="return confirm('Apakah yakin ingin menghapus barang ini dari keranjang?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-danger">Hapus</button>
                         </form>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+    <form id="form-transaksi" action="/transaksi/simpan" method="POST">
+        @csrf
+
+        <div class="row mt-3">
+            <div class="col-md-2">
+                <label for="bayar" class="form-label">Total</label>
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" id="bayar"
+                    value="Rp. {{ number_format($total, 0, ',', '.') }}" readonly>
+                <input type="hidden" name="total" value="{{ $total }}">
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-2">
+                <label for="diterima" class="form-label">Bayar</label>
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" id="diterima" placeholder="Masukkan jumlah uang yang diterima"
+                    required>
+                <div id="error-message" class="text-danger mt-2" style="display:none;"></div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-2">
+                <label for="kembali" class="form-label">Kembalian</label>
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" id="kembali" value="Rp. 0" readonly>
+            </div>
+        </div>
+        <div class="mt-4">
+            <button id="btnSimpan" type="button" class="btn btn-primary">
+                {{-- {{$jumlahItem == 0 ? 'disabled' : '' }}> --}}
+                Simpan Transaksi
+            </button>
+        </div>
+    </form>
+
+
+    <script>
+        document.getElementById("cariProduk").addEventListener("keyup", function() {
+            const keyword = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#tabelProduk tbody tr");
+
+            rows.forEach(function(row) {
+                const namaProduk = row.querySelector(".namaproduk ").textContent.toLowerCase();
+                row.style.display = namaProduk.includes(keyword) ? "" : "none";
+            });
+        });
+    </script>
+
+    <script>
+        function formatCurrency(value) {
+            value = value.replace(/\D/g, '');
+            return 'Rp. ' + value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function updateKembalian() {
+            var bayar = parseFloat(document.getElementById('bayar').value.replace(/Rp\. /g,
+                '').replace(/\./g, '').trim());
+            var diterima = document.getElementById('diterima').value.replace(/Rp\. /g,
+                    '').replace(/\D/g, '')
+                .trim();
+            var errorMessage = document.getElementById('error-message');
+            var kembaliField = document.getElementById('kembali');
+
+            if (diterima === "" || isNaN(diterima)) {
+                errorMessage.innerHTML = "Uang tidak boleh kosong";
+                errorMessage.style.display = "block";
+                kembaliField.value = "Rp. 0";
+                return;
+            }
+
+            // Hitung kembalian
+            var kembali = parseFloat(diterima) - bayar;
+
+            // kembalian negatif
+            if (kembali < 0) {
+                errorMessage.innerHTML = "Uang tidak boleh kurang dari total bayar";
+                errorMessage.style.display = "block";
+                kembaliField.value = "Rp. 0";
+                return;
+            }
+            errorMessage.style.display = "none";
+            kembaliField.value = "Rp. " + kembali.toLocaleString('id-ID');
+        }
+
+        document.getElementById('bayar').addEventListener('input', function() {
+            this.value = formatCurrency(this.value);
+            updateKembalian();
+        });
+
+        document.getElementById('diterima').addEventListener('input', function() {
+            var diterima = this.value.replace(/Rp\. /g, '').replace(/\D/g, '').trim();
+            this.value = formatCurrency(diterima);
+            updateKembalian();
+        });
+
+        // Form submit
+        document.getElementById('form-transaksi').addEventListener('submit',
+            function(event) {
+                var bayar = parseFloat(document.getElementById('bayar').value.replace(/Rp\. /g, '').replace(/\./g, '')
+                    .trim());
+                var diterima = document.getElementById('diterima').value.replace(/Rp\. /g, '').replace(/\D/g, '')
+                    .trim();
+                var errorMessage = document.getElementById('error-message');
+
+                if (diterima === "" || isNaN(diterima)) {
+                    errorMessage.innerHTML = "Uang tidak boleh kosong";
+                    errorMessage.style.display = "block";
+                    event.preventDefault();
+                    return;
+                }
+
+                var kembali = parseFloat(diterima) - bayar;
+
+                if (kembali < 0) {
+                    errorMessage.innerHTML = "Uang tidak boleh kurang dari total bayar";
+                    errorMessage.style.display = "block";
+                    event.preventDefault();
+                    return;
+                }
+
+                errorMessage.style.display = "none";
+            });
+    </script>
+
+    <script>
+        document.getElementById('btnSimpan').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Validasi form sebelum submit
+            var bayar = parseFloat(document.getElementById('bayar').value.replace(/Rp\. /g, '').replace(/\./g, '')
+                .trim());
+            var diterima = document.getElementById('diterima').value.replace(/Rp\. /g, '').replace(/\D/g, '')
+                .trim();
+            var errorMessage = document.getElementById('error-message');
+
+            // Validasi uang diterima
+            if (diterima === "" || isNaN(diterima)) {
+                errorMessage.innerHTML = "Uang tidak boleh kosong";
+                errorMessage.style.display = "block";
+                return;
+            }
+
+            var kembali = parseFloat(diterima) - bayar;
+            if (kembali < 0) {
+                errorMessage.innerHTML = "Uang tidak boleh kurang dari total bayar";
+                errorMessage.style.display = "block";
+                return;
+            }
+
+            errorMessage.style.display = "none";
+
+            // Submit form
+            const form = document.getElementById('form-transaksi');
+            const formData = new FormData(form);
+
+            fetch("{{ route('simpan_transaksi') }}", {
+                    method: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Tampilkan modal sukses
+                        document.getElementById('kodeTransaksi').innerHTML = 'Kode Transaksi: <strong>' + data
+                            .kode_transaksi + '</strong>';
+
+                        const modal = new bootstrap.Modal(document.getElementById('modalSukses'));
+                        modal.show();
+
+                        // Event listener untuk tombol cetak
+                        document.getElementById('btnCetak').onclick = function() {
+                            modal.hide();
+                            const tunai = document.getElementById('diterima').value.replace(/Rp\. /g, '')
+                                .replace(/\./g, '').trim();
+                            const kembali = document.getElementById('kembali').value.replace(/Rp\. /g, '')
+                                .replace(/\./g, '').trim();
+
+                            const urlCetak = "{{ url('transaksi/cetak') }}/" + data.kode_transaksi +
+                                "?tunai=" + tunai + "&kembali=" + kembali;
+                            window.open(urlCetak, "_blank");
+
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        }
+
+                        // Event listener untuk tombol tidak cetak
+                        document.getElementById('btnTidakCetak').onclick = function() {
+                            modal.hide();
+                            window.location.reload();
+                        }
+                    } else {
+                        alert('Terjadi kesalahan: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Terjadi kesalahan saat menyimpan transaksi');
+                });
+        });
+    </script>
+
+    @include('admin.modal.transaksi_sukses')
 
 @endsection
