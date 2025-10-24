@@ -81,3 +81,5 @@ Route::post('/keranjang/update/{id}', [TransaksiController::class, 'updateQty'])
 Route::post('/transaksi/simpan', [TransaksiController::class, 'simpanTransaksi'])->name('simpan_transaksi');
 
 Route::get('/transaksi/cetak/{kode}', [TransaksiController::class, 'cetak'])->name('transaksi.cetak');
+//cetak laporan untuk produk
+Route::get('/produk/cetak', [ProdukController::class, 'cetak_produk'])->name('produk.cetak');

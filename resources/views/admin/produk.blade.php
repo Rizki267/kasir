@@ -9,6 +9,8 @@
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahproduk">
         Tambah Barang
     </button>
+    <a href="/produk/cetak" class="btn btn-success">Cetak</a>
+    @include('admin.modal.produk_add')
     {{-- menampilkan data dari table kategori --}}
     <table class="table table-dark table-striped mt-3">
         <thead>
